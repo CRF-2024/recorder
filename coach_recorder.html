@@ -1,0 +1,532 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Presentation Coach</title>
+    <style>
+        body {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            color: #667eea;
+            margin: 0 0 10px 0;
+            font-size: 28px;
+            font-weight: 700;
+        }
+        
+        .header p {
+            color: #666;
+            margin: 0;
+            font-size: 16px;
+        }
+        
+        .record-section {
+            text-align: center;
+            margin: 30px 0;
+        }
+        
+        .record-btn {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: none;
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px auto;
+        }
+        
+        .record-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 35px rgba(255, 107, 107, 0.4);
+        }
+        
+        .record-btn.recording {
+            background: linear-gradient(135deg, #ff4757, #c44569);
+            animation: pulse 2s infinite;
+        }
+        
+        .record-btn.processing {
+            background: linear-gradient(135deg, #ffa726, #ff9800);
+            cursor: not-allowed;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .timer {
+            font-size: 24px;
+            font-weight: 600;
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+        
+        .status {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+        
+        .feedback-section {
+            margin-top: 30px;
+            display: none;
+        }
+        
+        .feedback-section.show {
+            display: block;
+        }
+        
+        .feedback-card {
+            background: #f8f9ff;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .feedback-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #667eea;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            padding: 8px 0;
+            border-bottom: 1px solid #e0e6ff;
+        }
+        
+        .metric:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+        
+        .metric-label {
+            font-weight: 500;
+            color: #555;
+        }
+        
+        .metric-value {
+            font-weight: 600;
+            color: #667eea;
+        }
+        
+        .suggestions {
+            background: #fff3cd;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 15px;
+            border-left: 4px solid #ffc107;
+        }
+        
+        .suggestions h4 {
+            margin: 0 0 10px 0;
+            color: #856404;
+            font-size: 16px;
+        }
+        
+        .suggestions ul {
+            margin: 0;
+            padding-left: 20px;
+            color: #856404;
+        }
+        
+        .suggestions li {
+            margin-bottom: 5px;
+        }
+        
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .download-btn {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .download-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);
+        }
+        
+        .reset-btn {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+            margin-top: 10px;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+        
+        .reset-btn:hover {
+            background: #5a6268;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎤 Presentation Coach</h1>
+            <p>Record yourself and get instant feedback</p>
+        </div>
+        
+        <div class="record-section">
+            <button id="recordBtn" class="record-btn">
+                <span id="recordText">Start Recording</span>
+            </button>
+            <div id="timer" class="timer">00:00</div>
+            <div id="status" class="status">Ready to record</div>
+        </div>
+        
+        <div id="error" class="error" style="display: none;"></div>
+        
+        <div id="feedbackSection" class="feedback-section">
+            <div class="feedback-card">
+                <div class="feedback-title">
+                    📊 Speech Analysis
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Duration</span>
+                    <span id="duration" class="metric-value">-</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Words per minute</span>
+                    <span id="wpm" class="metric-value">-</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Filler words</span>
+                    <span id="fillers" class="metric-value">-</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Pauses</span>
+                    <span id="pauses" class="metric-value">-</span>
+                </div>
+            </div>
+            
+            <div class="feedback-card">
+                <div class="feedback-title">
+                    🎯 Performance Score
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Overall Rating</span>
+                    <span id="score" class="metric-value">-</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Pace</span>
+                    <span id="paceRating" class="metric-value">-</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Clarity</span>
+                    <span id="clarityRating" class="metric-value">-</span>
+                </div>
+            </div>
+            
+            <div id="suggestions" class="suggestions">
+                <h4>💡 Suggestions for Improvement</h4>
+                <ul id="suggestionsList"></ul>
+            </div>
+            
+            <button id="downloadBtn" class="download-btn">
+                📱 Save Recording
+            </button>
+            <button id="resetBtn" class="reset-btn">
+                🔄 New Recording
+            </button>
+        </div>
+    </div>
+
+    <script>
+        let mediaRecorder;
+        let audioChunks = [];
+        let startTime;
+        let timerInterval;
+        let audioBlob;
+        let isRecording = false;
+
+        const recordBtn = document.getElementById('recordBtn');
+        const recordText = document.getElementById('recordText');
+        const timer = document.getElementById('timer');
+        const status = document.getElementById('status');
+        const feedbackSection = document.getElementById('feedbackSection');
+        const errorDiv = document.getElementById('error');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const resetBtn = document.getElementById('resetBtn');
+
+        // Initialize the app
+        async function initializeApp() {
+            try {
+                // Check if browser supports required APIs
+                if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                    throw new Error('Your browser does not support audio recording');
+                }
+                
+                // Check MediaRecorder support (Safari/iOS issue)
+                if (!window.MediaRecorder) {
+                    throw new Error('Audio recording is not supported on this browser. Please use Chrome, Firefox, or Edge.');
+                }
+                
+                status.textContent = 'Ready to record';
+            } catch (error) {
+                showError(error.message);
+            }
+        }
+
+        recordBtn.addEventListener('click', toggleRecording);
+        downloadBtn.addEventListener('click', downloadRecording);
+        resetBtn.addEventListener('click', resetApp);
+
+        async function toggleRecording() {
+            if (!isRecording) {
+                await startRecording();
+            } else {
+                stopRecording();
+            }
+        }
+
+        async function startRecording() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ 
+                    audio: {
+                        echoCancellation: true,
+                        noiseSuppression: true,
+                        sampleRate: 44100
+                    } 
+                });
+                
+                mediaRecorder = new MediaRecorder(stream);
+                audioChunks = [];
+                
+                mediaRecorder.ondataavailable = (event) => {
+                    audioChunks.push(event.data);
+                };
+                
+                mediaRecorder.onstop = () => {
+                    audioBlob = new Blob(audioChunks, { type: mediaRecorder.mimeType });
+                    stream.getTracks().forEach(track => track.stop());
+                    analyzeRecording();
+                };
+                
+                mediaRecorder.start();
+                isRecording = true;
+                startTime = Date.now();
+                
+                recordBtn.classList.add('recording');
+                recordText.textContent = 'Stop Recording';
+                status.textContent = 'Recording in progress...';
+                
+                startTimer();
+                hideError();
+                
+            } catch (error) {
+                // Clean up timer if recording failed
+                if (timerInterval) {
+                    clearInterval(timerInterval);
+                }
+                isRecording = false;
+                recordBtn.classList.remove('recording', 'processing');
+                recordText.textContent = 'Start Recording';
+                status.textContent = 'Ready to record';
+                showError('Could not access microphone. Please allow microphone access and try again.');
+            }
+        }
+
+        function stopRecording() {
+            if (mediaRecorder && isRecording) {
+                mediaRecorder.stop();
+                isRecording = false;
+                
+                recordBtn.classList.remove('recording');
+                recordBtn.classList.add('processing');
+                recordText.textContent = 'Processing...';
+                status.textContent = 'Analyzing your speech...';
+                
+                clearInterval(timerInterval);
+            }
+        }
+
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                const elapsed = Date.now() - startTime;
+                const minutes = Math.floor(elapsed / 60000);
+                const seconds = Math.floor((elapsed % 60000) / 1000);
+                timer.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }, 1000);
+        }
+
+        function analyzeRecording() {
+            // Simulate speech analysis (in a real app, this would use speech recognition APIs)
+            const duration = (Date.now() - startTime) / 1000;
+            const durationMinutes = duration / 60;
+            
+            // Simulate analysis results
+            const wordCount = Math.floor(duration * (120 + Math.random() * 60)); // 120-180 WPM range
+            const wpm = Math.round(wordCount / durationMinutes);
+            const fillerCount = Math.floor(wordCount * (0.02 + Math.random() * 0.08)); // 2-10% fillers
+            const pauseCount = Math.floor(duration / (8 + Math.random() * 12)); // Pause every 8-20 seconds
+            
+            // Calculate ratings
+            let paceRating = 'Good';
+            if (wpm < 100) paceRating = 'Too Slow';
+            else if (wpm > 200) paceRating = 'Too Fast';
+            
+            const fillerPercentage = (fillerCount / wordCount) * 100;
+            let clarityRating = 'Excellent';
+            if (fillerPercentage > 8) clarityRating = 'Needs Work';
+            else if (fillerPercentage > 5) clarityRating = 'Good';
+            
+            let overallScore = 85;
+            if (wpm < 100 || wpm > 200) overallScore -= 10;
+            if (fillerPercentage > 5) overallScore -= 15;
+            if (fillerPercentage > 8) overallScore -= 10;
+            
+            // Update UI with results
+            document.getElementById('duration').textContent = `${Math.floor(duration / 60)}:${(Math.floor(duration % 60)).toString().padStart(2, '0')}`;
+            document.getElementById('wpm').textContent = wpm;
+            document.getElementById('fillers').textContent = `${fillerCount} (${fillerPercentage.toFixed(1)}%)`;
+            document.getElementById('pauses').textContent = pauseCount;
+            document.getElementById('score').textContent = `${overallScore}/100`;
+            document.getElementById('paceRating').textContent = paceRating;
+            document.getElementById('clarityRating').textContent = clarityRating;
+            
+            // Generate suggestions
+            const suggestions = [];
+            if (wpm < 100) suggestions.push('Try speaking a bit faster to maintain audience engagement');
+            if (wpm > 200) suggestions.push('Slow down your pace to improve clarity and comprehension');
+            if (fillerPercentage > 5) suggestions.push('Reduce filler words like "um", "ah", "like" by practicing pauses');
+            if (pauseCount < 3) suggestions.push('Add more strategic pauses to emphasize key points');
+            if (duration < 30) suggestions.push('Practice longer presentations to build confidence');
+            
+            suggestions.push('Maintain eye contact with your audience');
+            suggestions.push('Use hand gestures to emphasize important points');
+            suggestions.push('Vary your tone and volume to keep listeners engaged');
+            
+            const suggestionsList = document.getElementById('suggestionsList');
+            suggestionsList.innerHTML = '';
+            suggestions.forEach(suggestion => {
+                const li = document.createElement('li');
+                li.textContent = suggestion;
+                suggestionsList.appendChild(li);
+            });
+            
+            // Show results
+            recordBtn.classList.remove('processing');
+            recordText.textContent = 'Start Recording';
+            status.textContent = 'Analysis complete!';
+            feedbackSection.classList.add('show');
+        }
+
+        function downloadRecording() {
+            if (audioBlob) {
+                const url = URL.createObjectURL(audioBlob);
+                const a = document.createElement('a');
+                a.href = url;
+                
+                // Get file extension based on mime type
+                let extension = 'webm';
+                if (audioBlob.type.includes('ogg')) extension = 'ogg';
+                else if (audioBlob.type.includes('mp4')) extension = 'mp4';
+                else if (audioBlob.type.includes('wav')) extension = 'wav';
+                
+                a.download = `presentation-${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.${extension}`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                status.textContent = 'Recording saved to your device!';
+            }
+        }
+
+        function resetApp() {
+            // Reset all states
+            isRecording = false;
+            audioChunks = [];
+            audioBlob = null;
+            
+            // Reset UI
+            recordBtn.classList.remove('recording', 'processing');
+            recordText.textContent = 'Start Recording';
+            timer.textContent = '00:00';
+            status.textContent = 'Ready to record';
+            feedbackSection.classList.remove('show');
+            
+            // Clear timer
+            if (timerInterval) {
+                clearInterval(timerInterval);
+            }
+            
+            hideError();
+        }
+
+        function showError(message) {
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+
+        function hideError() {
+            errorDiv.style.display = 'none';
+        }
+
+        // Initialize the app when page loads
+        initializeApp();
+    </script>
+</body>
+</html>
